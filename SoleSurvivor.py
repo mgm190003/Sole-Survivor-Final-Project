@@ -13,7 +13,7 @@ def main():
     running = True
     #game loop
     while running:
-        
+        #test
     pygame.quit
     
 if __name__ == "__main__":
