@@ -22,9 +22,8 @@ class Player ():
         x += (keys[pygame.K_d] - keys[pygame.K_a]) * self.speed
         y += (keys[pygame.K_s] - keys[pygame.K_w]) * self.speed
         self.pos = [x,y]
+        #shoot projectile
         
-            
-
         
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size))
@@ -41,8 +40,30 @@ class Player ():
         
 
 class Projectile ():
-    def __init__(self, pos=(0,0)):
-        return 0
+    def __init__(self, pos=(0,0), target=(0,0)):
+        self.pos = pos
+        self.damage = 1
+        self.target = target
+        
+    def update(self):
+        if self.life < 1:
+            self.dead = True
+        #update projectile position
+        
+        
+        
+    def update_surface(self):
+        surf = pygame.Surface((self.size, self.size))
+        surf.fill((255, 255, 255))
+        pygame.draw.rect(surf, self.color, (self.size, self.size, self.size, self.size))
+        return surf
+    
+    def draw(self, surface):
+        if self.dead == True:
+            return
+        self.surface.set_alpha(self.alpha)
+        surface.blit(self.surface, self.pos)
+    
 
 class Enemy ():
     def __init__(self, pos=(0,0)):
@@ -52,17 +73,23 @@ class Game ():
     def __init__(self, screen_res):
         self.resolution = screen_res
         self.player = Player()
+        
     def update(self):
         self.player.update()
+        self.update_projectiles()
+        
     def draw(self, surf):
         self.player.draw(surf)
+        
+    def update_projectiles(self):
+        return 0
         
 
 def main():
     #game setup
     pygame.init()
     pygame.display.set_caption("Sole Survivor")
-    resolution = (800, 600)
+    resolution = (1280, 720)
     screen = pygame.display.set_mode(resolution)
     game = Game(resolution)
     running = True
