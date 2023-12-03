@@ -4,7 +4,7 @@ import math
 from math import atan2, degrees, pi
 
 class Player ():
-    def __init__(self, pos=(250,250), life=1000):
+    def __init__(self, pos=(250,250)):
         self.pos = pos
         self.color = pygame.Color(255, 255, 255)
         self.size = 50
@@ -85,12 +85,12 @@ class Projectile ():
     
 
 class Enemy ():
-    def __init__(self, pos=(250,250), life=1000):
+    def __init__(self, pos=(250,250)):
         self.pos = pos
         self.color = pygame.Color(255, 0, 0)
         self.size = 50
         self.life = 1
-        self.speed = 0.5
+        self.speed = 2500
         self.dead = False
         self.alpha = 255
         self.surface = self.update_surface()
@@ -108,13 +108,14 @@ class Enemy ():
         y2 = pos[1]
         dx = (x2 - x1)
         dy = (y2 - y1)
-        x += dx / self.speed
-        y += dy / self.speed
+        temp_speed = self.speed * ((math.sqrt((dx * dx) + (dy * dy))) / 500)
+        x += dx / temp_speed
+        y += dy / temp_speed
         self.pos = [x,y]
         
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size))
-        surf.fill((255, 255, 255))
+        surf.fill((255, 0, 0))
         pygame.draw.rect(surf, self.color, (self.size, self.size, self.size, self.size))
         return surf
     
@@ -130,8 +131,8 @@ class Game ():
         self.player = Player()
         self.projectiles = []
         self.birth_tracker = 1
-        self.attack_rate = 800
-        self.spawn_rate = 800
+        self.attack_rate = 800 # lower number equals faster firing
+        self.spawn_rate = 800 # lower number equals faster spawning
         self.spawn_tracker = 1
         self.enemies = []
         
@@ -146,6 +147,8 @@ class Game ():
         self.player.draw(surf)
         for projectile in self.projectiles:
             projectile.draw(surf)
+        for enemy in self.enemies:
+            enemy.draw(surf)
     
     def make_enemy(self):
         screen_width = self.resolution[0] 
@@ -166,18 +169,13 @@ class Game ():
         
         spawn_location = (x,y)
         if self.spawn_tracker % self.spawn_rate == 0:
-            enemy = Enemy(spawn_location, pygame.mouse.get_pos())
+            enemy = Enemy(spawn_location)
             self.enemies.insert(0, enemy)
         self.spawn_tracker += 1
 
     def update_enemies(self):
         for idx, enemy in enumerate(self.enemies):
-            enemy.update()
-            if self._enemy_is_offscreen(enemy):
-                del self.enemies[idx]
-                
-    def _enemy_is_offscreen(self, enemy):
-        
+            enemy.update(self.player.pos)
         
     def make_projectile(self):
         if self.birth_tracker % self.attack_rate == 0:
