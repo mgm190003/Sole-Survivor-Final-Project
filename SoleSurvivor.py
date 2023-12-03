@@ -146,12 +146,13 @@ class Game ():
         self.update_enemies()
         self.check_collision()
         
-    def check_collision():
+    def check_collision(self):
         #check enemies are not touching enemies
         #make some kind of loop that checks if every enemy is not touching every other enemy but also dont make it check whats already been checked
         #check enemies are not touching projectiles
         
         #check enemies are not touching player
+        return
         
     def draw(self, surf):
         self.player.draw(surf)
