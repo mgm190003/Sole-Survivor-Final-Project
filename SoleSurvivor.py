@@ -124,6 +124,8 @@ class Enemy ():
             return
         self.surface.set_alpha(self.alpha)
         surface.blit(self.surface, self.pos)
+    def is_intersecting(self, pos, size):
+        return False
     
 class Game ():
     def __init__(self, screen_res):
@@ -142,6 +144,14 @@ class Game ():
         self.update_projectiles()
         self.make_enemy()
         self.update_enemies()
+        self.check_collision()
+        
+    def check_collision():
+        #check enemies are not touching enemies
+        #make some kind of loop that checks if every enemy is not touching every other enemy but also dont make it check whats already been checked
+        #check enemies are not touching projectiles
+        
+        #check enemies are not touching player
         
     def draw(self, surf):
         self.player.draw(surf)
@@ -176,7 +186,7 @@ class Game ():
     def update_enemies(self):
         for idx, enemy in enumerate(self.enemies):
             enemy.update(self.player.pos)
-        
+    
     def make_projectile(self):
         if self.birth_tracker % self.attack_rate == 0:
             bullet = Projectile(self.player.pos, pygame.mouse.get_pos())
