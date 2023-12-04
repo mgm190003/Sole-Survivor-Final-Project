@@ -94,6 +94,7 @@ class Enemy ():
         self.dead = False
         self.alpha = 255
         self.surface = self.update_surface()
+        self.last_movement = (0,0)
         
     def update(self, player_pos):
         pos = player_pos
@@ -112,6 +113,17 @@ class Enemy ():
         x += dx / temp_speed
         y += dy / temp_speed
         self.pos = [x,y]
+        self.last_movement = (dx/temp_speed,dy/temp_speed)
+    
+    def undo_movement(self):
+        x=self.pos[0]
+        y=self.pos[1]
+        dx = self.last_movement[0]
+        dy = self.last_movement[1]
+        temp_speed = self.speed * ((math.sqrt((dx * dx) + (dy * dy))) / 500)
+        x -= dx / temp_speed
+        y -= dy / temp_speed
+        self.pos = (x + random.randrange(-10, 10),y + random.randrange(-3, 3))
         
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size))
@@ -148,11 +160,49 @@ class Game ():
         
     def check_collision(self):
         #check enemies are not touching enemies
-        #make some kind of loop that checks if every enemy is not touching every other enemy but also dont make it check whats already been checked
+        for idx1, enemy1 in enumerate(self.enemies):
+            for idx2, enemy2 in enumerate(self.enemies):
+                if self.is_touching_enemy(enemy1, enemy2):
+                    enemy1.undo_movement()
+                    enemy2.undo_movement()
+                    
         #check enemies are not touching projectiles
-        
+        for idx, enemy in enumerate(self.enemies):
+            for idx2, projectile in enumerate(self.enemies):
+                if self.is_touching_enemy(enemy1, projectile):
+                    enemy1.undo_movement()
         #check enemies are not touching player
+        for idx, enemy in enumerate(self.enemies):
+            if self.is_touching_player(enemy):
+                del self.enemies[idx]
+                self.player.life -= 1
+
         return
+    
+    def is_touching_enemy(self, enemy1, enemy2):
+        touching = False
+        enemy1x = (enemy1.pos[0] + 25)
+        enemy1y = (enemy1.pos[1] + 25)
+        enemy2x = (enemy2.pos[0] + 25)
+        enemy2y = (enemy2.pos[1] + 25)
+        distance = math.sqrt(((enemy2x - enemy1x)*(enemy2x - enemy1x)) + ((enemy2y - enemy1y)*(enemy2y - enemy1y)))
+        if distance <36 and enemy1.pos[0] != enemy2.pos[0] and enemy1.pos[1] != enemy2.pos[1]:
+            touching = True
+        return touching
+        
+    def is_touching_player(self, enemy):
+        touching = False
+        player_centerx = (self.player.pos[0] + 25)
+        player_centery = (self.player.pos[1] + 25)
+        enemy_centerx = (enemy.pos[0] + 25)
+        enemy_centery = (enemy.pos[1] + 25)
+        distance = math.sqrt(((enemy_centerx - player_centerx)*(enemy_centerx - player_centerx)) + ((enemy_centery - player_centery)*(enemy_centery - player_centery)))
+        if distance <36:
+            touching = True
+        return touching
+
+    def is_touching_projectile(self, enemy)
+
         
     def draw(self, surf):
         self.player.draw(surf)
@@ -225,6 +275,8 @@ def main():
                 running = False
         # game logic
         game.update()
+        if game.player.dead == True:
+            running = False
         # render
         black = pygame.Color(0, 0, 0)
         screen.fill(black)
