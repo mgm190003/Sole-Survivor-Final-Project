@@ -168,9 +168,10 @@ class Game ():
                     
         #check enemies are not touching projectiles
         for idx, enemy in enumerate(self.enemies):
-            for idx2, projectile in enumerate(self.enemies):
-                if self.is_touching_enemy(enemy1, projectile):
-                    enemy1.undo_movement()
+            for idx2, projectile in enumerate(self.projectiles):
+                if self.is_touching_projectile(enemy, projectile):
+                    del self.enemies[idx]
+                    del self.projectiles[idx2]
         #check enemies are not touching player
         for idx, enemy in enumerate(self.enemies):
             if self.is_touching_player(enemy):
@@ -201,8 +202,16 @@ class Game ():
             touching = True
         return touching
 
-    def is_touching_projectile(self, enemy)
-
+    def is_touching_projectile(self, enemy, projectile):
+        touching = False
+        projectile_centerx = (projectile.pos[0] + 25)
+        projectile_centery = (projectile.pos[1] + 25)
+        enemy_centerx = (enemy.pos[0] + 25)
+        enemy_centery = (enemy.pos[1] + 25)
+        distance = math.sqrt(((enemy_centerx - projectile_centerx)*(enemy_centerx - projectile_centerx)) + ((enemy_centery - projectile_centery)*(enemy_centery - projectile_centery)))
+        if distance <36:
+            touching = True
+        return touching
         
     def draw(self, surf):
         self.player.draw(surf)
