@@ -146,7 +146,7 @@ class Game ():
         self.projectiles = []
         self.birth_tracker = 1
         self.attack_rate = 800 # lower number equals faster firing
-        self.spawn_rate = 800 # lower number equals faster spawning
+        self.spawn_rate = 750 # lower number equals faster spawning
         self.spawn_tracker = 1
         self.enemies = []
         
